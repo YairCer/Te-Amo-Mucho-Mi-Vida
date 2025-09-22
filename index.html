@@ -174,6 +174,30 @@
       to { transform: scale(3); opacity: 0; }
     }
 
+    /* Botón aniversario con colores animados */
+    #showAnniversaryBtn {
+      background: linear-gradient(45deg, #ff4d6d, #ff914d, #ffd700, #00c2ff, #a83279);
+      background-size: 400% 400%;
+      animation: gradientShift 6s ease infinite;
+      color: #fff;
+      font-weight: bold;
+      box-shadow: 0 0 15px rgba(255, 77, 109, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    #showAnniversaryBtn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.9),
+                  0 0 50px rgba(255, 77, 109, 0.7);
+    }
+
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
   </style>
@@ -208,6 +232,7 @@
       <div id="carouselContainer" style="display:none;">
         <h3>Nuestros Momentos 💕</h3>
         <div class="carousel">
+          <!-- Todas tus fotos -->
           <img src="WhatsApp Image 2025-09-22 at 9.21.39 AM (2).jpeg" alt="foto1">
           <img src="WhatsApp Image 2025-09-22 at 9.21.39 AM (1).jpeg" alt="foto2">
           <img src="WhatsApp Image 2025-09-22 at 9.21.39 AM.jpeg" alt="foto3">
@@ -219,8 +244,8 @@
           <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (1).jpeg" alt="foto9">
           <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM.jpeg" alt="foto10">
           <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM (2).jpeg" alt="foto11">
-    <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM (1).jpeg" alt="foto12">
-    <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM.jpeg" alt="foto13">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM (1).jpeg" alt="foto12">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM.jpeg" alt="foto13">
         </div>
       </div>
     </div>
@@ -343,7 +368,31 @@
       }
     }
 
-    // Evento aniversario con fuegos artificiales múltiples + carrusel
+    // Mini corazones desde el botón
+    function createMiniHearts(btn) {
+      for (let i = 0; i < 10; i++) {
+        const heart = document.createElement("div");
+        heart.textContent = "💖";
+        heart.style.position = "absolute";
+        heart.style.left = (btn.offsetLeft + btn.offsetWidth / 2) + "px";
+        heart.style.top = (btn.offsetTop + btn.offsetHeight / 2) + "px";
+        heart.style.fontSize = (12 + Math.random() * 12) + "px";
+        heart.style.animation = `floatUp ${1 + Math.random()}s ease-out forwards`;
+        document.body.appendChild(heart);
+
+        setTimeout(() => heart.remove(), 2000);
+      }
+    }
+
+    const style = document.createElement('style');
+    style.textContent = `
+    @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-80px) scale(1.5); opacity: 0; }
+    }`;
+    document.head.appendChild(style);
+
+    // Evento aniversario con fuegos artificiales, fotos y corazones
     showAnniversaryBtn.addEventListener('click', (e) => {
       const randomAnnivMsg = anniversaryMessages[Math.floor(Math.random() * anniversaryMessages.length)];
       document.getElementById("modalDesc").textContent = randomAnnivMsg;
@@ -353,9 +402,13 @@
       const x = e.clientX || window.innerWidth / 2;
       const y = e.clientY || window.innerHeight / 2;
 
+      // Fuegos artificiales
       createFirework(x, y);
       setTimeout(() => createFirework(x, y), 400);
       setTimeout(() => createFirework(x, y), 800);
+
+      // Corazoncitos desde el botón
+      createMiniHearts(showAnniversaryBtn);
     });
 
     // Mostrar botón de flores solo el 21 de septiembre
@@ -370,3 +423,4 @@
   </script>
 </body>
 </html>
+
