@@ -97,11 +97,13 @@
     .modal.active { opacity: 1; pointer-events: auto; }
     .modal-content {
       background: #a83279;
-      padding: 30px 40px;
+      padding: 20px;
       border-radius: 15px;
       color: #fff;
-      font-size: 1.3em;
-      max-width: 90vw;
+      font-size: 1.1em;
+      max-width: 95vw;
+      max-height: 90vh;
+      overflow: auto;
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
       text-align: center;
       animation: fadeInUp 0.5s ease forwards;
@@ -114,6 +116,21 @@
       cursor: pointer; transition: color 0.3s ease;
     }
     .close-btn:hover { color: #ddd; }
+
+    /* Carrusel de fotos */
+    .carousel {
+      display: flex;
+      overflow-x: auto;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .carousel img {
+      width: 200px;
+      height: 250px;
+      border-radius: 10px;
+      object-fit: cover;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
 
     /* Corazones flotando */
     .heart {
@@ -142,6 +159,21 @@
       100% { transform: translateY(-100vh) rotate(360deg) scale(1.5); opacity: 0; }
     }
 
+    /* Fuegos artificiales */
+    .firework {
+      position: fixed;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      pointer-events: none;
+      animation: explode 1s ease-out forwards;
+      z-index: 999;
+    }
+    @keyframes explode {
+      from { transform: scale(1); opacity: 1; }
+      to { transform: scale(3); opacity: 0; }
+    }
+
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(50px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes zoomIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
   </style>
@@ -163,8 +195,8 @@
     <div>
       <button id="showMessageBtn">💌 Mensaje secreto</button>
       <button id="toggleMusicBtn">🔈 Pausar música</button>
-      <!-- Botón de Flores (solo se muestra el 21 de septiembre) -->
       <button id="showFlowersBtn" style="display:none;">🌼 Flores para ti</button>
+      <button id="showAnniversaryBtn">🎉 Nuestro Aniversario</button>
     </div>
   </div>
 
@@ -173,6 +205,24 @@
     <div class="modal-content">
       <button class="close-btn" id="closeModal">&times;</button>
       <p id="modalDesc"></p>
+      <div id="carouselContainer" style="display:none;">
+        <h3>Nuestros Momentos 💕</h3>
+        <div class="carousel">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.39 AM (2).jpeg" alt="foto1">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.39 AM (1).jpeg" alt="foto2">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.39 AM.jpeg" alt="foto3">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (6).jpeg" alt="foto4">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (5).jpeg" alt="foto5">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (4).jpeg" alt="foto6">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (3).jpeg" alt="foto7">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (2).jpeg" alt="foto8">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM (1).jpeg" alt="foto9">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.38 AM.jpeg" alt="foto10">
+          <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM (2).jpeg" alt="foto11">
+    <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM (1).jpeg" alt="foto12">
+    <img src="WhatsApp Image 2025-09-22 at 9.21.37 AM.jpeg" alt="foto13">
+        </div>
+      </div>
     </div>
   </div>
 
@@ -189,6 +239,8 @@
     const toggleMusicBtn = document.getElementById('toggleMusicBtn');
     const music = document.getElementById('music');
     const showFlowersBtn = document.getElementById('showFlowersBtn');
+    const showAnniversaryBtn = document.getElementById('showAnniversaryBtn');
+    const carouselContainer = document.getElementById("carouselContainer");
 
     const messages = [
       "Nunca dejaré de agradecer al destino por cruzarnos 💘",
@@ -206,10 +258,18 @@
       "🌼 No hay regalo más hermoso que tenerte en mi vida, mi flor amarilla eterna. 💖"
     ];
 
+    const anniversaryMessages = [
+      "Hoy celebramos 1 año y 6 meses juntos 💖, gracias por ser mi razón de ser feliz cada día.",
+      "🎉 Feliz 1 año y 6 meses, mi amor. Cada momento contigo es un tesoro. 💕",
+      "💘 1 año y medio de amor, risas y sueños compartidos. Eres lo mejor que me pasó.",
+      "🌹 Nuestro amor crece con el tiempo... y hoy celebramos 18 meses de felicidad. 💖"
+    ];
+
     // Mensajes románticos
     showMessageBtn.addEventListener('click', () => {
       const randomMsg = messages[Math.floor(Math.random() * messages.length)];
       document.getElementById("modalDesc").textContent = randomMsg;
+      carouselContainer.style.display = "none";
       modal.classList.add('active');
     });
 
@@ -257,14 +317,52 @@
       }
       const randomFlowerMsg = flowerMessages[Math.floor(Math.random() * flowerMessages.length)];
       document.getElementById("modalDesc").textContent = randomFlowerMsg;
+      carouselContainer.style.display = "none";
       modal.classList.add('active');
     });
 
-    // Mostrar botón solo el 21 de septiembre
+    // Fuegos artificiales
+    function createFirework(x, y) {
+      const colors = ["#ff4d6d", "#ffd700", "#00c2ff", "#a83279", "#ff914d"];
+      for (let i = 0; i < 20; i++) {
+        const firework = document.createElement("div");
+        firework.classList.add("firework");
+        firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+        firework.style.left = x + "px";
+        firework.style.top = y + "px";
+
+        const angle = Math.random() * 2 * Math.PI;
+        const distance = Math.random() * 120;
+        const tx = Math.cos(angle) * distance;
+        const ty = Math.sin(angle) * distance;
+
+        firework.style.transform = `translate(${tx}px, ${ty}px)`;
+
+        document.body.appendChild(firework);
+        setTimeout(() => firework.remove(), 1000);
+      }
+    }
+
+    // Evento aniversario con fuegos artificiales múltiples + carrusel
+    showAnniversaryBtn.addEventListener('click', (e) => {
+      const randomAnnivMsg = anniversaryMessages[Math.floor(Math.random() * anniversaryMessages.length)];
+      document.getElementById("modalDesc").textContent = randomAnnivMsg;
+      carouselContainer.style.display = "block";
+      modal.classList.add('active');
+
+      const x = e.clientX || window.innerWidth / 2;
+      const y = e.clientY || window.innerHeight / 2;
+
+      createFirework(x, y);
+      setTimeout(() => createFirework(x, y), 400);
+      setTimeout(() => createFirework(x, y), 800);
+    });
+
+    // Mostrar botón de flores solo el 21 de septiembre
     window.addEventListener('load', () => {
       const today = new Date();
       const day = today.getDate();
-      const month = today.getMonth() + 1; // enero = 0
+      const month = today.getMonth() + 1;
       if (day === 21 && month === 9) {
         showFlowersBtn.style.display = "inline-block";
       }
